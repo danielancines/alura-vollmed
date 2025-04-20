@@ -17,5 +17,5 @@ especialistaRouter.delete("/:id", apagarEspecialista);
 especialistaRouter.patch("/:id", atualizaContato);
 
 export default (app) => {
-  app.use("/especialista", especialistaRouter);
+  app.use("/specialist", especialistaRouter);
 };

@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct SpecialistCardView: View {
+    @State private var specilistImage: UIImage?
     
     var specialist: Specialist
+    let specialistService = SpecialistsService()
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 16.0) {
-                Image(.doctor)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 64, height: 64)
-                    .clipShape(Circle())
+                if let specilistImage {
+                    Image(uiImage: specilistImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 64, height: 64)
+                        .clipShape(Circle())
+                }
                 
                 VStack(alignment: .leading, spacing: 8.0) {
                     Text(specialist.name)
@@ -34,6 +38,21 @@ struct SpecialistCardView: View {
         .padding()
         .background(Color(.lightBlue).opacity(0.15))
         .cornerRadius(16.0)
+        .onAppear(){
+            Task {
+                await downloadImage()
+            }
+        }
+    }
+    
+    func downloadImage() async {
+        do {
+            if let image = try await specialistService.downloadImage(from: specialist.imageUrl) {
+                self.specilistImage = image
+            }
+        } catch {
+            print("An error ocurred \(error)")
+        }
     }
 }
 

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State private var specialists: [Specialist] = []
+    let specialistsService = SpecialistsService()
+    
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack {
@@ -34,6 +37,23 @@ struct HomeView: View {
             .padding(.horizontal)
         }
         .padding(.top)
+        .onAppear(){
+            Task {
+                await fetchSpecialists()
+            }
+        }
+    }
+    
+    func fetchSpecialists() async {
+        do {
+            guard let specialists = try await specialistsService.getAllSpecialists() else {
+                print("Error fetching specialists")
+                return
+            }
+            self.specialists = specialists
+        } catch {
+            print("An error occurred: \(error)")
+        }
     }
 }
 
