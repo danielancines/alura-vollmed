@@ -2,7 +2,7 @@
 //  Date+.swift
 //  Vollmed
 //
-//  Created by daniel.ancines on 23/04/25.
+//  Created by Giovanna Moeller on 18/09/23.
 //
 
 import Foundation
@@ -10,8 +10,7 @@ import Foundation
 extension Date {
     func convertToString() -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = Formats.backendDateFormat
-        
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         return dateFormatter.string(from: self)
     }
 }

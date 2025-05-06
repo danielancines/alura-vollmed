@@ -24,7 +24,7 @@ struct ButtonView: View {
     var body: some View {
         Text(text)
             .bold()
-            .foregroundStyle(.white)
+            .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(buttonType == .primary ? Color.accentColor : Color(.cancel))

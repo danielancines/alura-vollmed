@@ -8,8 +8,20 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    let service = WebService()
+    
     @State private var specialists: [Specialist] = []
-    let specialistsService = SpecialistsService()
+    
+    func getSpecialists() async {
+        do {
+            if let specialists = try await service.getAllSpecialists() {
+                self.specialists = specialists
+            }
+        } catch {
+            print("Ocorreu um erro ao obter os especialistas: \(error)")
+        }
+    }
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -22,11 +34,11 @@ struct HomeView: View {
                 Text("Boas-vindas!")
                     .font(.title2)
                     .bold()
-                    .foregroundStyle(Color(.lightBlue))
+                    .foregroundColor(Color(.lightBlue))
                 Text("Veja abaixo os especialistas da Vollmed disponíveis e marque já a sua consulta!")
                     .font(.title3)
                     .bold()
-                    .foregroundStyle(.accent)
+                    .foregroundColor(.accentColor)
                     .multilineTextAlignment(.center)
                     .padding(.vertical, 16)
                 ForEach(specialists) { specialist in
@@ -37,22 +49,10 @@ struct HomeView: View {
             .padding(.horizontal)
         }
         .padding(.top)
-        .onAppear(){
+        .onAppear {
             Task {
-                await fetchSpecialists()
+                await getSpecialists()
             }
-        }
-    }
-    
-    func fetchSpecialists() async {
-        do {
-            guard let specialists = try await specialistsService.getAllSpecialists() else {
-                print("Error fetching specialists")
-                return
-            }
-            self.specialists = specialists
-        } catch {
-            print("An error occurred: \(error)")
         }
     }
 }

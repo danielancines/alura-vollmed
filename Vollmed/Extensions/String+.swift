@@ -2,20 +2,22 @@
 //  String+.swift
 //  Vollmed
 //
-//  Created by daniel.ancines on 23/04/25.
+//  Created by Giovanna Moeller on 18/09/23.
 //
 
 import Foundation
 
 extension String {
-    func dateToString(format: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = Formats.backendDateFormat
-            
-        if let date = dateFormatter.date(from: self){
-            dateFormatter.dateFormat = format
+    func convertDateStringToReadableDate() -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        if let date = inputFormatter.date(from: self) {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy 'às' HH:mm"
             return dateFormatter.string(from: date)
         }
+        
         return ""
     }
 }

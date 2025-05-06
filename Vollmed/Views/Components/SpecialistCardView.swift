@@ -8,16 +8,30 @@
 import SwiftUI
 
 struct SpecialistCardView: View {
-    @State private var specilistImage: UIImage?
     
     var specialist: Specialist
-    let specialistService = SpecialistsService()
+    var appointment: Appointment?
+    
+    let service = WebService()
+    
+    @State private var specialistImage: UIImage?
+    
+    func downloadImage() async {
+        do {
+            if let image = try await service.downloadImage(from: specialist.imageUrl) {
+                self.specialistImage = image
+            }
+        } catch {
+            print("Ocorreu um erro ao obter a imagem: \(error)")
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 16.0) {
-                if let specilistImage {
-                    Image(uiImage: specilistImage)
+                
+                if let specialistImage {
+                    Image(uiImage: specialistImage)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 64, height: 64)
@@ -29,33 +43,43 @@ struct SpecialistCardView: View {
                         .font(.title3)
                         .bold()
                     Text(specialist.specialty)
+                    if let appointment {
+                        Text(appointment.date.convertDateStringToReadableDate())
+                            .bold()
+                    }
                 }
             }
             
-            NavigationLink {
-                ScheduleAppointmentView(specialist: specialist)
-            } label: {
-                ButtonView(text: "Agendar consulta")
+            if let appointment {
+                HStack {
+                    NavigationLink {
+                        ScheduleAppointmentView(specialistID: appointment.specialist.id, isRescheduleView: true, appointmentID: appointment.id)
+                    } label: {
+                        ButtonView(text: "Remarcar")
+                    }
+                    
+                    NavigationLink {
+                        CancelAppointmentView(appointmentID: appointment.id)
+                    } label: {
+                        ButtonView(text: "Cancelar", buttonType: .cancel)
+                    }
+                }
+            } else {
+                NavigationLink {
+                    ScheduleAppointmentView(specialistID: specialist.id)
+                } label: {
+                    ButtonView(text: "Agendar consulta")
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color(.lightBlue).opacity(0.15))
         .cornerRadius(16.0)
-        .onAppear(){
+        .onAppear {
             Task {
                 await downloadImage()
             }
-        }
-    }
-    
-    func downloadImage() async {
-        do {
-            if let image = try await specialistService.downloadImage(from: specialist.imageUrl) {
-                self.specilistImage = image
-            }
-        } catch {
-            print("An error ocurred \(error)")
         }
     }
 }
